@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1a1620" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#fbf7f1" media="(prefers-color-scheme: light)" />
+<meta name="description" content="A calm, private place to write and save anything. Everything stays on your device." />
+<title>My Thoughts</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --fire1:#FF9656; --fire2:#F14575; --fire3:#9270F4;
+    --bg:#fbf7f1; --bg2:#f4eee5; --panel:#ffffff; --panel2:#fdfbf8;
+    --ink:#241f2b; --muted:#7b7387; --faint:#a89fb2;
+    --line:#e7ddd1; --line2:#efe7db;
+    --accent:#d2447a; --accent-soft:#fbe9f0;
+    --shadow:0 1px 2px rgba(36,31,43,.04), 0 8px 28px rgba(36,31,43,.06);
+    --font-ui:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    --font-display:'Fraunces',Georgia,serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#1a1620; --bg2:#211b29; --panel:#241e2d; --panel2:#2b2435;
+      --ink:#f0eaf4; --muted:#a99fb6; --faint:#7d7389;
+      --line:#352c41; --line2:#3d3349;
+      --accent:#f178a6; --accent-soft:#34243000;
+      --shadow:0 1px 2px rgba(0,0,0,.2), 0 10px 30px rgba(0,0,0,.28);
+    }
+  }
+  * { box-sizing:border-box; }
+  html,body { height:100%; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-ui); font-size:15px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  button { font-family:inherit; cursor:pointer; }
+  input,textarea { font-family:inherit; color:inherit; }
+
+  .app { display:grid; grid-template-columns:340px 1fr; height:100dvh; }
+
+  /* ── Sidebar ── */
+  .side { background:var(--bg2); border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0; }
+  .brand { display:flex; align-items:center; gap:11px; padding:18px 18px 14px; }
+  .mark {
+    width:34px; height:34px; border-radius:10px; flex:none;
+    background:linear-gradient(135deg,var(--fire1),var(--fire2) 55%,var(--fire3));
+    display:grid; place-items:center; color:#fff; font-weight:700;
+    font-family:var(--font-display); font-size:18px;
+    box-shadow:0 4px 12px rgba(241,69,117,.32);
+  }
+  .brand h1 { margin:0; font-family:var(--font-display); font-weight:600; font-size:20px; letter-spacing:-.01em; }
+  .brand .tag { margin:1px 0 0; font-size:11.5px; color:var(--muted); }
+  .side-tools { display:flex; gap:8px; align-items:center; margin-left:auto; }
+  .icon-btn {
+    width:34px; height:34px; border-radius:9px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:15px; display:grid; place-items:center;
+    transition:.15s;
+  }
+  .icon-btn:hover { color:var(--ink); border-color:var(--accent); }
+
+  .side-head { padding:4px 16px 12px; display:flex; flex-direction:column; gap:10px; }
+  .new-btn {
+    border:0; border-radius:11px; padding:11px 14px; color:#fff; font-weight:600; font-size:14.5px;
+    background:linear-gradient(135deg,var(--fire1),var(--fire2) 60%,var(--fire3));
+    box-shadow:0 4px 14px rgba(241,69,117,.28); display:flex; align-items:center; justify-content:center; gap:7px;
+    transition:transform .12s, box-shadow .2s;
+  }
+  .new-btn:hover { box-shadow:0 6px 18px rgba(241,69,117,.4); }
+  .new-btn:active { transform:scale(.985); }
+
+  .search { position:relative; }
+  .search input {
+    width:100%; border:1px solid var(--line); border-radius:10px; background:var(--panel);
+    padding:9px 11px 9px 32px; font-size:14px; outline:none;
+  }
+  .search input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .search .si { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--faint); font-size:13px; pointer-events:none; }
+
+  .tagbar { display:flex; gap:6px; flex-wrap:wrap; padding:0 16px 8px; }
+  .tagbar:empty { display:none; }
+  .tfilter {
+    border:1px solid var(--line); background:var(--panel); color:var(--muted);
+    border-radius:999px; padding:3px 10px; font-size:12px; transition:.15s;
+  }
+  .tfilter:hover { color:var(--ink); }
+  .tfilter.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  .list { flex:1; overflow:auto; padding:4px 10px 16px; min-height:0; }
+  .entry {
+    border:1px solid transparent; border-radius:12px; padding:12px 13px; margin:4px 0; cursor:pointer;
+    transition:.13s; position:relative;
+  }
+  .entry:hover { background:var(--panel); border-color:var(--line2); }
+  .entry.active { background:var(--panel); border-color:var(--accent); box-shadow:var(--shadow); }
+  .entry .et { font-weight:600; font-size:14.5px; display:flex; align-items:center; gap:6px; }
+  .entry .et .pin { color:var(--accent); font-size:12px; }
+  .entry .ex { color:var(--muted); font-size:12.5px; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .entry .em { color:var(--faint); font-size:11px; margin-top:6px; display:flex; gap:8px; }
+  .entry .etags { display:flex; gap:4px; flex-wrap:wrap; margin-top:7px; }
+  .mini-tag { font-size:10.5px; color:var(--accent); background:var(--accent-soft); border:1px solid var(--line2); border-radius:999px; padding:1px 7px; }
+  @media (prefers-color-scheme: dark){ .mini-tag{ background:#3a2a36; } }
+
+  .empty-list { text-align:center; color:var(--faint); padding:40px 16px; font-size:13px; line-height:1.6; }
+
+  /* ── Editor ── */
+  .main { display:flex; flex-direction:column; min-width:0; background:var(--bg); }
+  .ed-top { display:flex; align-items:center; gap:10px; padding:14px 22px; border-bottom:1px solid var(--line); }
+  .back { display:none; }
+  .ed-status { font-size:12px; color:var(--faint); display:flex; align-items:center; gap:6px; }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--faint); }
+  .dot.saved { background:#3fae6b; }
+  .ed-actions { margin-left:auto; display:flex; gap:8px; align-items:center; }
+  .act {
+    border:1px solid var(--line); background:var(--panel); color:var(--muted);
+    border-radius:9px; padding:7px 12px; font-size:13px; font-weight:500; transition:.15s; display:inline-flex; align-items:center; gap:6px;
+  }
+  .act:hover { color:var(--ink); border-color:var(--accent); }
+  .act.danger:hover { color:#fff; background:#d1495b; border-color:#d1495b; }
+  .act.rethink {
+    color:#fff; border:0;
+    background:linear-gradient(135deg,var(--fire2),var(--fire3));
+    box-shadow:0 3px 10px rgba(146,112,244,.3);
+  }
+  .act.rethink:hover { color:#fff; }
+  .act:active { transform:scale(.98); }
+
+  .ed-body { flex:1; overflow:auto; min-height:0; display:flex; justify-content:center; }
+  .ed-inner { width:100%; max-width:760px; padding:34px 28px 120px; }
+  .title-in {
+    width:100%; border:0; outline:none; background:transparent; color:var(--ink);
+    font-family:var(--font-display); font-weight:600; font-size:33px; line-height:1.18; letter-spacing:-.015em;
+    padding:0; margin-bottom:8px;
+  }
+  .title-in::placeholder { color:var(--faint); }
+  .meta-row { display:flex; align-items:center; gap:12px; color:var(--faint); font-size:12px; margin-bottom:18px; flex-wrap:wrap; }
+  .body-in {
+    width:100%; border:0; outline:none; background:transparent; color:var(--ink);
+    font-size:16.5px; line-height:1.7; resize:none; min-height:48vh; padding:0; display:block;
+  }
+  .body-in::placeholder { color:var(--faint); }
+
+  .tags-edit { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:26px; padding-top:18px; border-top:1px dashed var(--line2); }
+  .tags-edit .lbl { font-size:11px; color:var(--faint); text-transform:uppercase; letter-spacing:.08em; font-weight:600; }
+  .chip { display:inline-flex; align-items:center; gap:5px; background:var(--accent-soft); border:1px solid var(--line2); color:var(--accent); border-radius:999px; padding:3px 6px 3px 10px; font-size:12.5px; }
+  @media (prefers-color-scheme: dark){ .chip{ background:#3a2a36; } }
+  .chip button { border:0; background:transparent; color:var(--accent); font-size:13px; line-height:1; padding:0 2px; cursor:pointer; opacity:.7; }
+  .chip button:hover { opacity:1; }
+  .tag-in { border:0; outline:none; background:transparent; font-size:13px; min-width:90px; padding:4px 2px; color:var(--ink); }
+  .tag-in::placeholder { color:var(--faint); }
+
+  .blank { flex:1; display:grid; place-items:center; text-align:center; color:var(--faint); padding:40px; }
+  .blank .bm { font-family:var(--font-display); font-size:26px; color:var(--muted); margin-bottom:8px; }
+  .blank p { max-width:340px; line-height:1.6; font-size:14px; }
+
+  .toast {
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:var(--bg); padding:10px 18px; border-radius:999px; font-size:13px; font-weight:500;
+    box-shadow:0 8px 24px rgba(0,0,0,.25); opacity:0; pointer-events:none; transition:.25s; z-index:50;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* hidden file input */
+  #importFile { display:none; }
+
+  /* ── Mobile ── */
+  @media (max-width:820px) {
+    .app { grid-template-columns:1fr; }
+    .main { display:none; }
+    body.editing .side { display:none; }
+    body.editing .main { display:flex; }
+    .back { display:grid; place-items:center; width:34px; height:34px; border-radius:9px; border:1px solid var(--line); background:var(--panel); color:var(--ink); font-size:16px; }
+    .ed-inner { padding:24px 18px 120px; }
+    .title-in { font-size:27px; }
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="side">
+      <div class="brand">
+        <div class="mark">T</div>
+        <div>
+          <h1>My Thoughts</h1>
+          <div class="tag">Write & save anything · stays on your device</div>
+        </div>
+        <div class="side-tools">
+          <button class="icon-btn" id="exportBtn" title="Export / back up">⇩</button>
+          <button class="icon-btn" id="importBtn" title="Import a backup">⇧</button>
+        </div>
+      </div>
+      <div class="side-head">
+        <button class="new-btn" id="newBtn">＋ New thought</button>
+        <div class="search">
+          <span class="si">⌕</span>
+          <input id="searchIn" type="search" placeholder="Search your thoughts…" autocomplete="off" />
+        </div>
+      </div>
+      <div class="tagbar" id="tagbar"></div>
+      <div class="list" id="list"></div>
+    </aside>
+
+    <!-- Editor -->
+    <main class="main" id="main">
+      <div class="blank" id="blank">
+        <div>
+          <div class="bm">A blank page is a good place to start.</div>
+          <p>Capture a thought, a worry, an idea, a plan — anything. It saves itself, and never leaves this device unless you choose to.</p>
+        </div>
+      </div>
+
+      <div id="editor" style="display:none; flex:1; flex-direction:column; min-height:0;">
+        <div class="ed-top">
+          <button class="back" id="backBtn">‹</button>
+          <div class="ed-status"><span class="dot" id="saveDot"></span><span id="saveTxt">Saved</span></div>
+          <div class="ed-actions">
+            <button class="act rethink" id="rethinkBtn" title="Send this thought to Rethink with AI">↗ Rethink with AI</button>
+            <button class="act" id="pinBtn" title="Pin to top">☆ Pin</button>
+            <button class="act" id="copyBtn" title="Copy text">⧉ Copy</button>
+            <button class="act danger" id="delBtn" title="Delete">🗑 Delete</button>
+          </div>
+        </div>
+        <div class="ed-body">
+          <div class="ed-inner">
+            <input class="title-in" id="titleIn" placeholder="Untitled thought" />
+            <div class="meta-row" id="metaRow"></div>
+            <textarea class="body-in" id="bodyIn" placeholder="Start writing…"></textarea>
+            <div class="tags-edit">
+              <span class="lbl">Tags</span>
+              <span id="chips"></span>
+              <input class="tag-in" id="tagIn" placeholder="add a tag + Enter" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <input type="file" id="importFile" accept="application/json" />
+
+<script>
+"use strict";
+// ── Where "Rethink with AI" (project #30) lives. Update if the deploy URL differs. ──
+const RETHINK_URL = "https://rethink-with-ai.vercel.app";
+
+const KEY = "mythoughts_entries_v1";
+const $ = id => document.getElementById(id);
+const els = {
+  list:$("list"), tagbar:$("tagbar"), search:$("searchIn"),
+  editor:$("editor"), blank:$("blank"),
+  title:$("titleIn"), body:$("bodyIn"), meta:$("metaRow"),
+  chips:$("chips"), tagIn:$("tagIn"),
+  saveDot:$("saveDot"), saveTxt:$("saveTxt"),
+  toast:$("toast"),
+};
+
+let entries = load();
+let activeId = null;
+let tagFilter = null;
+let saveTimer = null;
+
+function load() {
+  try { const a = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(a) ? a : []; }
+  catch { return []; }
+}
+function persist() { localStorage.setItem(KEY, JSON.stringify(entries)); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function now() { return Date.now(); }
+
+function fmt(ts) {
+  const d = new Date(ts), n = new Date();
+  const sameDay = d.toDateString() === n.toDateString();
+  const time = d.toLocaleTimeString([], { hour:"numeric", minute:"2-digit" });
+  if (sameDay) return "Today, " + time;
+  const yest = new Date(n); yest.setDate(n.getDate() - 1);
+  if (d.toDateString() === yest.toDateString()) return "Yesterday, " + time;
+  return d.toLocaleDateString([], { month:"short", day:"numeric", year: d.getFullYear() !== n.getFullYear() ? "numeric" : undefined }) + ", " + time;
+}
+function words(s) { const t = (s || "").trim(); return t ? t.split(/\s+/).length : 0; }
+function active() { return entries.find(e => e.id === activeId) || null; }
+
+function toast(msg) {
+  els.toast.textContent = msg; els.toast.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => els.toast.classList.remove("show"), 1800);
+}
+
+// ── Rendering ──
+function allTags() {
+  const set = new Set();
+  entries.forEach(e => (e.tags || []).forEach(t => set.add(t)));
+  return [...set].sort((a, b) => a.localeCompare(b));
+}
+
+function renderTagbar() {
+  const tags = allTags();
+  els.tagbar.innerHTML = tags.map(t =>
+    `<button class="tfilter${tagFilter === t ? " on" : ""}" data-tag="${esc(t)}">#${esc(t)}</button>`
+  ).join("");
+}
+
+function visibleEntries() {
+  const q = els.search.value.trim().toLowerCase();
+  return entries
+    .filter(e => !tagFilter || (e.tags || []).includes(tagFilter))
+    .filter(e => {
+      if (!q) return true;
+      return (e.title + " " + e.body + " " + (e.tags || []).join(" ")).toLowerCase().includes(q);
+    })
+    .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.updated - a.updated);
+}
+
+function renderList() {
+  const data = visibleEntries();
+  if (!entries.length) {
+    els.list.innerHTML = `<div class="empty-list">No thoughts yet.<br>Tap <b>＋ New thought</b> to begin.</div>`;
+    return;
+  }
+  if (!data.length) {
+    els.list.innerHTML = `<div class="empty-list">Nothing matches that.<br>Try a different search or tag.</div>`;
+    return;
+  }
+  els.list.innerHTML = data.map(e => {
+    const title = e.title.trim() || "Untitled thought";
+    const excerpt = e.body.trim().replace(/\s+/g, " ").slice(0, 90) || "Empty — start writing…";
+    const tags = (e.tags || []).slice(0, 3).map(t => `<span class="mini-tag">#${esc(t)}</span>`).join("");
+    return `<div class="entry${e.id === activeId ? " active" : ""}" data-id="${e.id}">
+      <div class="et">${e.pinned ? '<span class="pin">★</span>' : ""}${esc(title)}</div>
+      <div class="ex">${esc(excerpt)}</div>
+      ${tags ? `<div class="etags">${tags}</div>` : ""}
+      <div class="em"><span>${fmt(e.updated)}</span><span>${words(e.body)} words</span></div>
+    </div>`;
+  }).join("");
+}
+
+function renderEditor() {
+  const e = active();
+  if (!e) {
+    els.editor.style.display = "none";
+    els.blank.style.display = "grid";
+    document.body.classList.remove("editing");
+    return;
+  }
+  els.blank.style.display = "none";
+  els.editor.style.display = "flex";
+  els.title.value = e.title;
+  els.body.value = e.body;
+  els.meta.innerHTML = `<span>${fmt(e.created)}</span><span>·</span><span id="wc">${words(e.body)} words</span>`;
+  $("pinBtn").innerHTML = e.pinned ? "★ Pinned" : "☆ Pin";
+  renderChips();
+}
+
+function renderChips() {
+  const e = active(); if (!e) return;
+  els.chips.innerHTML = (e.tags || []).map((t, i) =>
+    `<span class="chip">#${esc(t)}<button data-i="${i}" title="remove">×</button></span>`
+  ).join("");
+}
+
+function renderAll() { renderTagbar(); renderList(); renderEditor(); }
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+
+// ── Actions ──
+function newThought() {
+  const e = { id:uid(), title:"", body:"", tags:[], pinned:false, created:now(), updated:now() };
+  entries.unshift(e);
+  activeId = e.id;
+  persist();
+  renderAll();
+  document.body.classList.add("editing");
+  els.title.focus();
+}
+
+function openEntry(id) {
+  activeId = id;
+  document.body.classList.add("editing");
+  renderAll();
+  els.body.focus({ preventScroll:true });
+}
+
+function flagSaving() {
+  els.saveDot.classList.remove("saved");
+  els.saveTxt.textContent = "Saving…";
+}
+function flagSaved() {
+  els.saveDot.classList.add("saved");
+  els.saveTxt.textContent = "Saved";
+}
+
+function scheduleSave() {
+  const e = active(); if (!e) return;
+  flagSaving();
+  e.title = els.title.value;
+  e.body = els.body.value;
+  e.updated = now();
+  const wc = $("wc"); if (wc) wc.textContent = words(e.body) + " words";
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    persist();
+    renderList(); renderTagbar();
+    flagSaved();
+  }, 450);
+}
+
+function delThought() {
+  const e = active(); if (!e) return;
+  if (!confirm("Delete this thought? This can't be undone.")) return;
+  entries = entries.filter(x => x.id !== e.id);
+  activeId = null;
+  persist();
+  document.body.classList.remove("editing");
+  renderAll();
+  toast("Deleted");
+}
+
+function togglePin() {
+  const e = active(); if (!e) return;
+  e.pinned = !e.pinned; e.updated = now();
+  persist(); renderAll();
+  toast(e.pinned ? "Pinned to top" : "Unpinned");
+}
+
+function addTag(raw) {
+  const e = active(); if (!e) return;
+  const t = raw.trim().replace(/^#/, "").slice(0, 24);
+  if (!t) return;
+  e.tags = e.tags || [];
+  if (!e.tags.includes(t)) { e.tags.push(t); e.updated = now(); persist(); renderChips(); renderTagbar(); renderList(); }
+  els.tagIn.value = "";
+}
+
+function copyThought() {
+  const e = active(); if (!e) return;
+  const text = (e.title ? e.title + "\n\n" : "") + e.body;
+  navigator.clipboard?.writeText(text).then(() => toast("Copied to clipboard"), () => toast("Couldn't copy"));
+}
+
+function rethink() {
+  const e = active(); if (!e) return;
+  const text = (e.title && e.body ? e.title + "\n\n" + e.body : (e.body || e.title)).trim();
+  if (!text) { toast("Write something first"); return; }
+  const payload = b64urlEncode(JSON.stringify({ t:text, title:e.title || "" }));
+  window.open(RETHINK_URL + "/?t=" + payload, "_blank", "noopener");
+}
+
+function b64urlEncode(str) {
+  return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// ── Export / Import ──
+function exportAll() {
+  const blob = new Blob([JSON.stringify({ app:"my-thoughts", version:1, exported:new Date().toISOString(), entries }, null, 2)], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "my-thoughts-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+  a.click(); URL.revokeObjectURL(a.href);
+  toast("Backup downloaded");
+}
+
+function importFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const incoming = Array.isArray(data) ? data : data.entries;
+      if (!Array.isArray(incoming)) throw new Error("bad format");
+      const byId = new Map(entries.map(e => [e.id, e]));
+      let added = 0;
+      incoming.forEach(raw => {
+        if (!raw || typeof raw.body !== "string") return;
+        const e = {
+          id: raw.id || uid(),
+          title: String(raw.title || ""),
+          body: String(raw.body || ""),
+          tags: Array.isArray(raw.tags) ? raw.tags.map(String) : [],
+          pinned: !!raw.pinned,
+          created: Number(raw.created) || now(),
+          updated: Number(raw.updated) || now(),
+        };
+        const existing = byId.get(e.id);
+        if (!existing) { entries.push(e); byId.set(e.id, e); added++; }
+        else if (e.updated > existing.updated) { Object.assign(existing, e); }
+      });
+      persist(); renderAll();
+      toast(added ? `Imported ${added} thought${added > 1 ? "s" : ""}` : "Backup merged");
+    } catch { toast("That file couldn't be read"); }
+  };
+  reader.readAsText(file);
+}
+
+// ── Events ──
+$("newBtn").addEventListener("click", newThought);
+els.list.addEventListener("click", ev => {
+  const card = ev.target.closest(".entry"); if (card) openEntry(card.dataset.id);
+});
+els.tagbar.addEventListener("click", ev => {
+  const b = ev.target.closest(".tfilter"); if (!b) return;
+  tagFilter = tagFilter === b.dataset.tag ? null : b.dataset.tag;
+  renderTagbar(); renderList();
+});
+els.search.addEventListener("input", renderList);
+els.title.addEventListener("input", scheduleSave);
+els.body.addEventListener("input", scheduleSave);
+els.body.addEventListener("input", autoGrow);
+$("backBtn").addEventListener("click", () => { document.body.classList.remove("editing"); activeId = null; renderList(); });
+$("delBtn").addEventListener("click", delThought);
+$("pinBtn").addEventListener("click", togglePin);
+$("copyBtn").addEventListener("click", copyThought);
+$("rethinkBtn").addEventListener("click", rethink);
+els.chips.addEventListener("click", ev => {
+  const b = ev.target.closest("button[data-i]"); if (!b) return;
+  const e = active(); if (!e) return;
+  e.tags.splice(+b.dataset.i, 1); e.updated = now(); persist(); renderChips(); renderTagbar(); renderList();
+});
+els.tagIn.addEventListener("keydown", ev => {
+  if (ev.key === "Enter" || ev.key === ",") { ev.preventDefault(); addTag(els.tagIn.value); }
+  else if (ev.key === "Backspace" && !els.tagIn.value) {
+    const e = active(); if (e && e.tags.length) { e.tags.pop(); e.updated = now(); persist(); renderChips(); renderTagbar(); renderList(); }
+  }
+});
+$("exportBtn").addEventListener("click", exportAll);
+$("importBtn").addEventListener("click", () => $("importFile").click());
+$("importFile").addEventListener("change", ev => { if (ev.target.files[0]) importFile(ev.target.files[0]); ev.target.value = ""; });
+
+function autoGrow() {
+  els.body.style.height = "auto";
+  els.body.style.height = Math.max(els.body.scrollHeight, window.innerHeight * 0.48) + "px";
+}
+
+document.addEventListener("keydown", ev => {
+  const mod = ev.metaKey || ev.ctrlKey;
+  if (mod && ev.key.toLowerCase() === "n") { ev.preventDefault(); newThought(); }
+  else if (mod && ev.key.toLowerCase() === "s") { ev.preventDefault(); const e = active(); if (e) { e.title = els.title.value; e.body = els.body.value; persist(); flagSaved(); toast("Saved"); } }
+  else if (ev.key === "/" && document.activeElement !== els.search && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { ev.preventDefault(); els.search.focus(); }
+});
+
+// ── Init ──
+renderAll();
+if (entries.length && window.innerWidth > 820) { openEntry(visibleEntries()[0]?.id || entries[0].id); }
+autoGrow();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
