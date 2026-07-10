@@ -368,6 +368,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
           <div class="bm">A blank page is a good place to start.</div>
           <p>Capture a thought, a worry, an idea, a plan — anything. It saves itself, and never leaves this device unless you choose to.</p>
           <div class="nudge" id="nudge"></div>
+          <div id="blankRug"></div>
         </div>
       </div>
 
@@ -800,12 +801,27 @@ const NUDGES = [
 ];
 function renderNudge() {
   const n = $("nudge"); if (!n) return;
+  renderBlankRug();
   let off = false; try { off = localStorage.getItem("mt_nudge_off") === "1"; } catch {}
   if (off) { n.style.display = "none"; return; }
   const p = NUDGES[Math.floor(Date.now() / 86400000) % NUDGES.length];
   n.innerHTML = `<b>Today's nudge</b>${esc(p)}<div class="nb"><button id="nudgeGo">Write from this</button><button id="nudgeOff" title="Never show nudges again">Hide forever</button></div>`;
   $("nudgeGo").onclick = () => { newThought(); els.title.value = p; scheduleSave(); els.body.focus(); };
   $("nudgeOff").onclick = () => { try { localStorage.setItem("mt_nudge_off", "1"); } catch {} n.style.display = "none"; };
+}
+
+// SYED-CONCEPT · Personal Pack jewel: the year heat rug — your real writing
+// rhythm woven into the blank page (same on-device data as the stats panel).
+function renderBlankRug() {
+  const host = $("blankRug"); if (!host) return;
+  const m = activityMap();
+  if (m.size < 3) { host.innerHTML = ""; return; } // needs a little history to mean anything
+  const streak = calcStreak(m);
+  host.innerHTML = `
+    <div style="margin-top:22px">
+      <div style="font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:2px">Your writing, last 17 weeks${streak > 1 ? ` · ${streak}-day streak` : ""}</div>
+      ${heatmapHTML(m)}
+    </div>`;
 }
 
 // ── Export / Import ──
