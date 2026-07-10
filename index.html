@@ -227,6 +227,87 @@
     .title-in { font-size:27px; }
   }
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+
+  /* ── SYED-WAVE8 · "the lamplit study" — bespoke elevation (hand-written) ── */
+  body::before { /* paper grain */
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+    opacity:.035; mix-blend-mode:multiply;
+  }
+  body::after { /* warm lamp wash over the editor pane */
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(52% 44% at 72% 4%, rgba(255,150,86,.09), transparent 70%),
+      radial-gradient(40% 36% at 96% 88%, rgba(146,112,244,.06), transparent 70%);
+  }
+  @media (prefers-color-scheme: dark){
+    body::before { opacity:.05; mix-blend-mode:soft-light; }
+    body::after { background:
+      radial-gradient(52% 44% at 72% 0%, rgba(255,150,86,.10), transparent 70%),
+      radial-gradient(44% 40% at 96% 92%, rgba(146,112,244,.10), transparent 70%); }
+  }
+  .app { position:relative; z-index:1; }
+  ::selection { background:rgba(241,69,117,.22); }
+  .title-in, .body-in, .tag-in, .search input { caret-color:var(--accent); }
+
+  /* living gradient ink on the blank-page line */
+  .blank .bm {
+    font-size:clamp(27px, 3.6vw, 36px); font-style:italic; font-weight:500; letter-spacing:-.01em;
+    background:linear-gradient(100deg, var(--fire1), var(--fire2) 38%, var(--fire3) 72%, var(--fire1));
+    background-size:280% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:sw8-ink 16s linear infinite;
+  }
+  @keyframes sw8-ink { to { background-position:-280% 0; } }
+
+  /* title hairline draws in gold-to-violet on focus */
+  .title-in { border-bottom:2px solid transparent; }
+  .title-in:focus {
+    border-image:linear-gradient(90deg, var(--fire1), var(--fire2) 55%, var(--fire3)) 1;
+    border-image-width:0 0 2px 0;
+  }
+
+  /* gate-aware entrance choreography (body.enter added post-unlock, removed after play) */
+  @keyframes sw8-rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  body.enter .brand           { animation:sw8-rise .55s cubic-bezier(.2,.7,.2,1) both; }
+  body.enter .side-head       { animation:sw8-rise .55s cubic-bezier(.2,.7,.2,1) .08s both; }
+  body.enter .tagbar          { animation:sw8-rise .55s cubic-bezier(.2,.7,.2,1) .14s both; }
+  body.enter .entry:nth-child(-n+9) { animation:sw8-rise .5s cubic-bezier(.2,.7,.2,1) both; }
+  body.enter .entry:nth-child(1){animation-delay:.16s} body.enter .entry:nth-child(2){animation-delay:.21s}
+  body.enter .entry:nth-child(3){animation-delay:.26s} body.enter .entry:nth-child(4){animation-delay:.31s}
+  body.enter .entry:nth-child(5){animation-delay:.36s} body.enter .entry:nth-child(6){animation-delay:.41s}
+  body.enter .entry:nth-child(7){animation-delay:.46s} body.enter .entry:nth-child(8){animation-delay:.51s}
+  body.enter .entry:nth-child(9){animation-delay:.56s}
+  body.enter .blank .bm       { animation:sw8-rise .6s cubic-bezier(.2,.7,.2,1) .15s both, sw8-ink 16s linear .15s infinite; }
+  body.enter .blank p         { animation:sw8-rise .6s cubic-bezier(.2,.7,.2,1) .28s both; }
+  body.enter .blank .nudge    { animation:sw8-rise .6s cubic-bezier(.2,.7,.2,1) .40s both; }
+
+  /* sheen sweep across the New-thought CTA on hover */
+  .new-btn { position:relative; overflow:hidden; }
+  .new-btn::after {
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,.34) 50%, transparent 62%);
+    transform:translateX(-120%);
+  }
+  .new-btn:hover::after { animation:sw8-sheen .8s ease; }
+  @keyframes sw8-sheen { to { transform:translateX(120%); } }
+
+  /* focus mode: a quiet centered ornament above the page */
+  body.focus .ed-inner { position:relative; }
+  body.focus .ed-inner::before {
+    content:""; position:absolute; top:4.2vh; left:50%; width:64px; height:2px;
+    transform:translateX(-50%); border-radius:2px; opacity:.55;
+    background:linear-gradient(90deg, var(--fire1), var(--fire2) 55%, var(--fire3));
+  }
+  .dot.saved { box-shadow:0 0 0 3px rgba(63,174,107,.18); }
+
+  @media (prefers-reduced-motion: reduce){
+    body.enter *, .blank .bm, .new-btn:hover::after { animation:none !important; }
+    body.enter .entry, body.enter .brand, body.enter .side-head, body.enter .tagbar,
+    body.enter .blank .bm, body.enter .blank p, body.enter .blank .nudge { opacity:1; transform:none; }
+  }
+  @media print { body::before, body::after { display:none; } }
+  /* ── /SYED-WAVE8 ── */
 </style>
 <!-- SYED-GATE · entry password, re-locks every load · injected by research-suite/tools/gate/inject.mjs -->
 <script>(function(){"use strict";
@@ -886,6 +967,19 @@ autoGrow();
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }
+
+// SYED-WAVE8 · entrance plays after the gate unlocks, not behind it
+(function () {
+  function play() {
+    document.body.classList.add("enter");
+    setTimeout(() => document.body.classList.remove("enter"), 1800);
+  }
+  const gate = document.getElementById("syed-gate");
+  if (!gate) { play(); return; }
+  new MutationObserver((_, obs) => {
+    if (!document.getElementById("syed-gate")) { obs.disconnect(); play(); }
+  }).observe(document.body, { childList: true });
+})();
 </script>
 </body>
 </html>
