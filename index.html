@@ -332,7 +332,7 @@ function mk(){
 mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mk);
 })();</script>
 <!-- /SYED-GATE -->
-<link rel="stylesheet" href="product-design.css?v=20260912">
+<link rel="stylesheet" href="product-design.css?v=20261010">
 </head>
 <body>
   <div class="app">
@@ -355,7 +355,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
         <button class="new-btn" id="newBtn">＋ New thought</button>
         <div class="search">
           <span class="si">⌕</span>
-          <input id="searchIn" type="search" placeholder="Search… (#tag · after:2026-01-01)" autocomplete="off" />
+          <input id="searchIn" aria-label="Search thoughts and tags" type="search" placeholder="Search… (#tag · after:2026-01-01)" autocomplete="off" />
         </div>
       </div>
       <div class="tagbar" id="tagbar"></div>
@@ -387,13 +387,13 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
         </div>
         <div class="ed-body">
           <div class="ed-inner">
-            <input class="title-in" id="titleIn" placeholder="Untitled thought" />
+            <input class="title-in" id="titleIn" aria-label="Thought title" placeholder="Untitled thought" />
             <div class="meta-row" id="metaRow"></div>
-            <textarea class="body-in" id="bodyIn" placeholder="Start writing…"></textarea>
+            <textarea class="body-in" id="bodyIn" aria-label="Your thought" placeholder="Start writing…"></textarea>
             <div class="tags-edit">
               <span class="lbl">Tags</span>
               <span id="chips"></span>
-              <input class="tag-in" id="tagIn" placeholder="add a tag + Enter" />
+              <input class="tag-in" id="tagIn" aria-label="Add a tag" placeholder="add a tag + Enter" />
             </div>
             <div class="mood-row" id="moodRow"></div>
             <div class="links-row" id="linksRow"></div>
