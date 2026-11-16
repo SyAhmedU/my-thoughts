@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap');
 /* Product design 2026-09-12 · My Thoughts · real application, unchanged data contracts. */
 html[data-product-design="2026"] {
  --product-accent:#76602a;--product-accent-dark:#d6c58c;
@@ -109,3 +110,24 @@ html[data-product-design="2026"] .syed-bar button{min-width:36px;min-height:36px
 html[data-product-design="2026"] #syed-tour-btn{position:fixed!important;right:18px!important;bottom:14px!important;float:none;margin:0!important;min-height:44px;box-shadow:none!important;background:var(--product-surface)!important;color:var(--product-ink)!important;border-color:var(--product-line)!important}
 
 html[data-product-design="2026"] .hero>h1{background:none!important;color:var(--product-ink)!important;-webkit-text-fill-color:var(--product-ink)!important}
+
+/* Design v4 "seven colours" 2026-11-16 (CM: carry the redesign to the standalones): lilac-white ground, aubergine ink, ink primary pill, Bricolage headings, rounder shapes. Overrides the tokens above. */
+html[data-product-design="2026"]{
+ --product-accent:#17121F;--product-accent-dark:#7C5CDB;
+ --product-canvas:#F8F6FB;--product-surface:#FFFFFF;--product-soft:#EFEBF5;
+ --product-ink:#17121F;--product-muted:#5E566E;--product-line:#E2DCEB;
+ --serif:'Bricolage Grotesque',Inter,system-ui,sans-serif!important;
+ --font-display:'Bricolage Grotesque',Inter,system-ui,sans-serif!important;
+ --r:14px!important;--r-sm:10px!important;--r-lg:20px!important;
+ --shadow:none!important;--shadow-sm:none!important;--shadow-lift:0 6px 20px #17121f12!important;
+}
+html[data-product-design="2026"][data-theme="dark"],html[data-product-design="2026"].dark,html[data-product-design="2026"]:has(body.dark),html[data-product-design="2026"]:has(body[data-theme="dark"]){
+ --product-accent:var(--product-accent-dark);--product-canvas:#17121F;--product-surface:#211A2C;
+ --product-soft:#2C2339;--product-ink:#F3EFFA;--product-muted:#B9B0CC;--product-line:#3A3049;
+}
+html[data-product-design="2026"] :is(h1,h2,h3,.hero-title,.display-title){font-family:var(--serif)!important;font-weight:700!important;letter-spacing:-.025em!important;}
+html[data-product-design="2026"] :is(.card,.panel,.tile,.hardcard,.project-card){border-radius:18px;box-shadow:none;}
+html[data-product-design="2026"] :is(.btn-primary,.btn-fill,.primary,.button:not(.secondary),.hardbtn.bg-red-500,.syed-link-all){border-radius:999px!important;}
+html[data-product-design="2026"] :is(input,textarea,select):not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]){border-radius:10px;}
+html[data-product-design="2026"] :where(.refine-panel){border-radius:14px}
+@media print{html[data-product-design="2026"]{--product-canvas:white;--product-surface:white;--product-ink:#17121F;--product-muted:#5E566E;}}
